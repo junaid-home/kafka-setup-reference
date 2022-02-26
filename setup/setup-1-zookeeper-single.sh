@@ -19,16 +19,26 @@ echo "172.31.9.1 kafka1
 172.31.35.20 kafka3
 172.31.35.20 zookeeper3" | sudo tee --append /etc/hosts
 
-# download Zookeeper and Kafka. Recommended is latest Kafka (0.10.2.1) and Scala 2.12
-wget https://archive.apache.org/dist/kafka/0.10.2.1/kafka_2.12-0.10.2.1.tgz
+# download Zookeeper and Kafka.
+wget https://dlcdn.apache.org/kafka/3.1.0/kafka-3.1.0-src.tgz
 tar -xvzf kafka_2.12-0.10.2.1.tgz
 rm kafka_2.12-0.10.2.1.tgz
 mv kafka_2.12-0.10.2.1 kafka
 cd kafka/
 # Zookeeper quickstart
 cat config/zookeeper.properties
+# Build the project
+./gradlew jar -PscalaVersion=2.13.6
+# start the zookeeper server
 bin/zookeeper-server-start.sh config/zookeeper.properties
 # binding to port 2181 -> you're good. Ctrl+C to exit
+
+# Whitelist 4 letter commands
+sudo nano /etc/profile
+## add this line at the end of the file
+export KAFKA_OPTS=-Dzookeeper.4lw.commands.whitelist=*
+# save & exit and update shell
+source /etc/profile
 
 # Testing Zookeeper install
 # Start Zookeeper in the background
